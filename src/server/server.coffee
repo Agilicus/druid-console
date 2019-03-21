@@ -153,19 +153,13 @@ app.get('/overlord/:cluster', (req, res) ->
 app.all('/health', (req, res) -> res.status(200).send('OK'))
 
 # startup
-console.log('Discovering druid cluster...')
-dns.resolve4(zkHostname, (err, addresses) ->
-  throw err if err
-  console.log(
-    "Zookeeper discovery at #{zkHostname} resolved to #{addresses.length} ZK node IP addresses: #{addresses.join(', ')}"
-  )
-  zkDiscovery = ZookeeperLocator.getLocatorFactory({
+console.log('Discovering druid cluster...', zkHostname)
+zkDiscovery = ZookeeperLocator.getLocatorFactory({
     serverLocator: SimpleLocator.getLocatorFactory()(zkHostname),
     path: process.env.ZK_SERVICE_DISC_PATH
-  })
+})
 
-  console.log('Starting http server...')
-  port = if /^\d+$/.test process.argv[2] then parseInt(process.argv[2]) else 8080
-  app.listen(port)
-  console.log("Listening on port #{port}")
-)
+console.log('Starting http server...')
+port = if /^\d+$/.test process.argv[2] then parseInt(process.argv[2]) else 8080
+app.listen(port)
+console.log("Listening on port #{port}")
